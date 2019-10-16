@@ -1,0 +1,151 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="/layout/default.xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <ui:define name="title">
+        Twitter. Search
+    </ui:define>
+
+    <ui:define name="north">
+        Search Tweets
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="form"> 
+            <p:dataScroller value="#{tweetViewBean.tweetList}" var="tweet" chunkSize="10">
+                <f:facet name="header">
+<p:outputPanel style="text-align: left;">
+                    <p:selectOneMenu id="console" value="#{tweetView.searchType}" style="width:125px">
+                        <f:selectItem itemLabel="All" itemValue="" />
+                        <f:selectItem itemLabel="Following" itemValue="Following" />
+                        <f:selectItem itemLabel="Myself" itemValue="Myself" />
+                    </p:selectOneMenu>
+                    
+                    
+                        <p:inputText placeholder="Search Tweet" value="#{tweetViewBean.searchString}"/>
+                        <p:commandButton value="Search"
+                                         action="#{tweetViewBean.searchTweet}"
+                                         update="form"
+                                         />
+                    </p:outputPanel>
+                </f:facet>
+
+                <c:if test="${tweetViewBean.tweetList.size() == 0}">
+                    <f:facet name="loader">
+                        <p:commandButton type="button" value="More" icon="fa fa-fw fa-arrow-circle-down"/>
+                    </f:facet>
+                </c:if>
+                <h:panelGrid columns="2" style="width:100%" columnClasses="logo,detail">
+                    <!--                    <p:graphicImage name="demo/images/car/-big.gif" /> -->
+
+                    <p:outputPanel>
+                        <h:panelGroup>
+                            <h:panelGrid columns="2" cellpadding="5">
+
+                                <h:outputText value="Oringal From:"  rendered="#{tweetViewBean.checkRT(tweet)}"/>
+                                <h:outputText value="#{tweet.retweetFrom}" style="font-weight: bold" rendered="#{tweetViewBean.checkRT(tweet)}"/>
+
+                                <h:outputText value="Username:" />
+                                <h:outputText value="#{tweet.ownedBy.userName}" style="font-weight: bold"/>
+
+                                <h:outputText value="Posted On:" />
+                                <h:outputText value="#{tweet.createdOn}" style="font-weight: bold"/>
+
+                                <h:outputText value="Tweet:" />
+                                <h:outputText value="#{tweet.content}" style="font-weight: bold"/>
+
+                                <h:outputText value="Photo " rendered="#{tweetViewBean.checkPhoto(tweet)}" />
+
+                                <h:panelGroup rendered="#{tweetViewBean.checkPhoto(tweet)}">
+                                    <img id="picture" src="data:image/jpg;base64,#{tweetViewBean.displayImage(tweet)}"
+                                         width = "25%" height = "20%"/>
+                                </h:panelGroup>
+                            </h:panelGrid>
+                        </h:panelGroup>
+
+
+
+                        <p:commandButton value="View User"
+                                         action="#{tweetViewBean.viewUser(tweet)}"                                         
+                                         update=":form:userDetail" title="User Detail"
+                                         oncomplete="PF('userDialog').show()"
+                                         />
+                        <p:commandButton value="Like"
+                                         action="#{tweetViewBean.likeTweet(tweet)}"
+                                         />
+                        <p:commandButton value="Retweet"
+                                         action="#{tweetViewBean.retweetTweet(tweet)}"
+                                         />
+
+                    </p:outputPanel>
+                </h:panelGrid>
+            </p:dataScroller>
+
+            <p:dialog header="User Info" widgetVar="userDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false" appendTo="@(body)">
+                <p:outputPanel id="userDetail" style="text-align:center;">
+                    <p:panelGrid  columns="2" rendered="#{not empty tweetViewBean.selectedUser}" columnClasses="label,value">
+
+                        <f:facet name="header">
+                            <h:outputText value="#{tweetViewBean.selectedUser.userName}'s Profile" />
+                        </f:facet>
+
+                        <h:outputText value="Username:" />
+                        <h:outputText value="#{tweetViewBean.selectedUser.userName}" />
+
+                        <h:outputText value="Birthday: " />
+                        <h:outputText value="#{tweetViewBean.selectedUser.birthday}" />
+
+                        <h:outputText value="Description: " />
+                        <h:outputText value="#{tweetViewBean.selectedUser.description}" />
+
+                        <h:outputText value="Tweets: " />
+                        <h:outputText value="#{tweetViewBean.selectedUser.ownedTweetList.size()}" />
+
+                        <h:outputText value="Followers: " />
+                        <h:outputText value="#{tweetViewBean.selectedUser.followerList.size()}" />
+
+                        <h:outputText value="Following: " />
+                        <h:outputText value="#{tweetViewBean.selectedUser.followList.size()}" />
+
+                    </p:panelGrid>
+
+                    <p:commandButton value="Follow" 
+                                     title="Follow user"
+                                     action="#{userViewBean.followSelectedUser}"
+                                     />
+                    <p:commandButton value="Message" title="Message user"
+                                     update=":form:userMessage" 
+                                     oncomplete="PF('msgDialog').show()"
+                                     />
+                </p:outputPanel>
+            </p:dialog>
+
+            <p:dialog header="Message" widgetVar="msgDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false" appendTo="@(body)">
+                <p:outputPanel id="userMessage" style="text-align:center;">
+                    <p:panelGrid  columns="2" rendered="#{not empty tweetViewBean.selectedUser}" columnClasses="label,value">
+                        <f:facet name="header">
+                            <h:outputText value="Message #{tweetViewBean.selectedUser.userName}" />
+                        </f:facet>
+
+                        <h:outputText value="Message: " />
+                        <p:inputTextarea rows="5" cols="30" counter="display" maxlength="256" counterTemplate="{0} characters remaining." autoResize="false" />
+                        <h:outputText value="" />
+                        <h:outputText id="display" />
+
+                    </p:panelGrid>
+                    <p:commandButton value="Send" 
+                                     title="Send Message"
+                                     />
+                </p:outputPanel>
+
+            </p:dialog>
+
+        </h:form>
+    </ui:define>
+
+</ui:composition>

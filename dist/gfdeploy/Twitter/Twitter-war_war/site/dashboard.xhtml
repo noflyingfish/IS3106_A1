@@ -1,0 +1,187 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../layout/default.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <ui:define name="title">
+        Twitter. Dashboard
+    </ui:define>
+
+    <ui:define name="north">
+        User Dashboard
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="form">
+            <h:panelGrid columns="2" cellpadding="5">
+
+                <p:panel id="followerToggle" toggleable="true" collapsed="true"  toggleSpeed="500" 
+                         closeSpeed="500" widgetVar="panel_1" style="margin-bottom:10px">
+
+                    <f:facet name="header">
+                        <h:outputText value="Follower: #{userViewBean.followerList.size()}" />
+                    </f:facet>
+
+                    <c:if test="${userViewBean.followerList.size() != 0}">
+                        <h:panelGrid columns="2" cellpadding="10">
+                            <p:dataScroller value="#{userViewBean.followerList}" var="user" chunkSize="10">
+
+                                <f:facet name="loader">
+                                    <p:commandButton type="button" value="More" icon="fa fa-fw fa-arrow-circle-down"/>
+                                </f:facet>
+
+                                <h:panelGrid columns="2" style="width:100%" columnClasses="logo,detail">
+
+                                    <p:outputPanel>
+                                        <h:panelGroup>
+                                            <h:panelGrid columns="2" cellpadding="5">
+
+                                                <h:outputText value="Username: " />
+                                                <h:outputText value="#{user.userName}" style="font-weight: bold"/>
+
+                                                <h:outputText value="Description: " />
+                                                <h:outputText value="#{user.userName}" style="font-weight: bold"/>
+
+                                                <!--                    <p:graphicImage name="demo/images/car/-big.gif" /> -->
+                                            </h:panelGrid>
+                                        </h:panelGroup>
+                                    </p:outputPanel>
+                                </h:panelGrid>
+                            </p:dataScroller>
+                        </h:panelGrid>
+                    </c:if>
+                </p:panel>
+
+                <p:panel id="followeringToggle" toggleable="true" toggleSpeed="500" collapsed="true"
+                         closeSpeed="500" widgetVar="panel_2" style="margin-bottom:10px">
+
+                    <f:facet name="header">
+                        <h:outputText value="Following: #{userViewBean.followingList.size()}" />
+                    </f:facet>
+                    <c:if test="${userViewBean.followingList.size() != 0}">
+                        <h:panelGrid columns="2" cellpadding="10">
+                            <p:dataScroller value="#{userViewBean.followingList}" var="user" chunkSize="10">
+
+                                <f:facet name="loader">
+                                    <p:commandButton type="button" value="More" icon="fa fa-fw fa-arrow-circle-down"/>
+                                </f:facet>
+
+                                <h:panelGrid columns="2" style="width:100%" columnClasses="logo,detail">
+
+                                    <p:outputPanel>
+                                        <h:panelGroup>
+                                            <h:panelGrid columns="2" cellpadding="5">
+
+                                                <h:outputText value="Username: " />
+                                                <h:outputText value="#{user.userName}" style="font-weight: bold"/>
+
+                                                <h:outputText value="Description: " />
+                                                <h:outputText value="#{user.description}" style="font-weight: bold"/>
+
+                                                <!--                    <p:graphicImage name="demo/images/car/-big.gif" /> -->
+                                            </h:panelGrid>
+                                        </h:panelGroup>
+                                    </p:outputPanel>
+                                </h:panelGrid>
+                            </p:dataScroller>
+                        </h:panelGrid>
+                    </c:if>
+                </p:panel>
+
+                <p:panel id="TweetsToggle" toggleable="true" toggleSpeed="500" collapsed="true"
+                         closeSpeed="500" widgetVar="panel_3" style="margin-bottom:10px">
+
+                    <f:facet name="header">
+                        <h:outputText value="My Tweets: #{tweetViewBean.ownList.size()}" />
+                    </f:facet>
+                    <c:if test="${userSessionBean.user.ownedTweetList.size() != 0}">
+                        <h:panelGrid columns="2" cellpadding="10">
+                            <p:dataScroller value="#{tweetViewBean.ownList}" var="tweet" chunkSize="10">
+
+                                <f:facet name="loader">
+                                    <p:commandButton type="button" value="More" icon="fa fa-fw fa-arrow-circle-down"/>
+                                </f:facet>
+
+                                <h:panelGrid columns="2" style="width:100%" columnClasses="logo,detail">
+
+                                    <p:outputPanel>
+                                        <h:panelGroup>
+                                            <h:panelGrid columns="2" cellpadding="5">
+
+                                                <h:outputText value="Posted On:" />
+                                                <h:outputText value="#{tweet.createdOn}" style="font-weight: bold"/>
+
+                                                <h:outputText value="Tweet:" />
+                                                <h:outputText value="#{tweet.content}" style="font-weight: bold"/>
+
+                                                <!--                    <p:graphicImage name="demo/images/car/-big.gif" /> -->
+                                            </h:panelGrid>
+                                        </h:panelGroup>
+
+                                        <p:commandButton value="Delete"
+                                                         action="#{tweetViewBean.deleteTweet(tweet)}"
+                                                         update=":form"
+                                                         />
+
+                                    </p:outputPanel>
+                                </h:panelGrid>
+                            </p:dataScroller>
+                        </h:panelGrid>
+                    </c:if>
+                </p:panel>
+
+                <p:panel id="LikeToggle" toggleable="true" toggleSpeed="500" collapsed="true"
+                         closeSpeed="500" widgetVar="panel_5" style="margin-bottom:10px">
+
+                    <f:facet name="header">
+                        <h:outputText value="Liked: #{tweetViewBean.likedList.size()}" />
+                    </f:facet>
+                    <c:if test="${tweetViewBean.likedList.size() != 0}">
+                        <h:panelGrid columns="2" cellpadding="10">
+                            <p:dataScroller value="#{tweetViewBean.likedList}" var="tweet" chunkSize="10">
+
+                                <f:facet name="loader">
+                                    <p:commandButton type="button" value="More" icon="fa fa-fw fa-arrow-circle-down"/>
+                                </f:facet>
+
+                                <h:panelGrid columns="2" style="width:100%" columnClasses="logo,detail">
+
+                                    <p:outputPanel>
+                                        <h:panelGroup>
+                                            <h:panelGrid columns="2" cellpadding="5">
+                                                <h:outputText value="Username:" />
+                                                <h:outputText value="#{tweet.ownedBy.userName}" style="font-weight: bold"/>
+
+                                                <h:outputText value="Posted On:" />
+                                                <h:outputText value="#{tweet.createdOn}" style="font-weight: bold"/>
+
+                                                <h:outputText value="Tweet:" />
+                                                <h:outputText value="#{tweet.content}" style="font-weight: bold"/>
+
+                                                <!--                    <p:graphicImage name="demo/images/car/-big.gif" /> -->
+                                            </h:panelGrid>
+                                        </h:panelGroup>
+
+                                        <p:commandButton value="Unlike"
+                                                         action="#{tweetViewBean.unlikeTweet(tweet)}"
+                                                         update=":form"
+                                                         />
+
+                                    </p:outputPanel>
+                                </h:panelGrid>
+
+                            </p:dataScroller>
+                        </h:panelGrid>
+                    </c:if>
+                </p:panel>
+
+
+            </h:panelGrid>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

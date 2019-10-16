@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="/layout/default.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <ui:define name="title">
+        Twitter. Home
+    </ui:define>
+
+    <ui:define name="north">
+
+        <h:panelGroup rendered="#{userViewBean.checkPhoto()}">
+            <img id="picture" src="data:image/jpg;base64,#{userViewBean.displayImage()}"
+                 width = "5%" height = "50%"/>
+        </h:panelGroup>
+    <br/>
+        <h:outputText value="Welcome back to Twitter. #{userSessionBean.username}. The time now is " />
+        <p:clock pattern="dd-MM-yyyy HH:mm:ss "/>
+        <br/><br/>
+        <h:outputText value="FASTER DO WORK" />
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="form">
+
+            <p:dataScroller value="#{tweetViewBean.wallList}" var="tweet" chunkSize="10">
+                <f:facet name="loader">
+                    <p:commandButton type="button" value="More" icon="fa fa-fw fa-arrow-circle-down"/>
+                </f:facet>
+
+                <h:panelGrid columns="2" style="width:100%" columnClasses="logo,detail">
+                    <p:outputPanel>
+                        <h:panelGroup>
+                            <h:panelGrid columns="2" cellpadding="5">
+                                
+                                <h:outputText value="Oringal From:"  rendered="#{tweetViewBean.checkRT(tweet)}"/>
+                                <h:outputText value="#{tweet.retweetFrom}" style="font-weight: bold" rendered="#{tweetViewBean.checkRT(tweet)}"/>
+                                
+                                <h:outputText value="Posted By:" />
+                                <h:outputText value="#{tweet.ownedBy.userName}" style="font-weight: bold"/>
+
+                                <h:outputText value="Posted On:" />
+                                <h:outputText value="#{tweet.createdOn}" style="font-weight: bold"/>
+
+                                <h:outputText value="Tweet:" />
+                                <h:outputText value="#{tweet.content}" style="font-weight: bold"/>
+
+                                <h:outputText value="Photo " rendered="#{tweetViewBean.checkPhoto(tweet)}" />
+
+                                <h:panelGroup rendered="#{tweetViewBean.checkPhoto(tweet)}">
+                                    <img id="picture" src="data:image/jpg;base64,#{tweetViewBean.displayImage(tweet)}"
+                                         width = "25%" height = "20%"/>
+                                </h:panelGroup>
+
+                            </h:panelGrid>
+                        </h:panelGroup>
+
+
+                        <p:commandButton value="Unlike"
+                                         rendered="#{tweetViewBean.checkLikeTweet(tweet)}"
+                                         action="#{tweetViewBean.unlikeTweet(tweet)}"
+                                         update=":form"
+                                         />
+
+                        <p:commandButton value="Like"
+                                         rendered="#{tweetViewBean.checkUnlikeTweet(tweet)}"
+                                         action="#{tweetViewBean.likeTweet(tweet)}"
+                                         update=":form"
+                                         />
+
+                        <p:commandButton value="Retweet"
+                                         action="#{tweetViewBean.retweetTweet(tweet)}"
+                                         />
+                    </p:outputPanel>
+                </h:panelGrid>
+            </p:dataScroller>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

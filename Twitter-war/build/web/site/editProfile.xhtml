@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="/layout/default.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="title">
+        Twitter. Profile
+    </ui:define>
+
+    <ui:define name="north">
+        Edit Profile
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="editProfile" enctype="multipart/form-data">
+            <p:growl id="growl" showDetail="true"/>
+            <p:panelGrid columns="2">
+
+                <f:facet name="header">
+                    Edit Profile
+                </f:facet>
+
+                <h:outputLabel for="oldUsername">Old Username: </h:outputLabel>
+                <h:panelGroup>
+                    <p:inputText id="oldUsername" value="#{userViewBean.oldUsername}" 
+                                 required="true"
+                                 requiredMessage="Username is required"/>
+                    <p:message for="oldUsername" />
+                </h:panelGroup>
+
+                <h:outputLabel for="oldPassword">Old Password: </h:outputLabel>
+                <h:panelGroup>
+                    <p:password id="oldPassword" value="#{userViewBean.oldPassword}" 
+                                required="true"
+                                requiredMessage="Old password is required"/>
+                    <p:message for="oldPassword" />
+                </h:panelGroup>
+
+
+                <h:outputLabel for="name1">New Username: </h:outputLabel>
+                <h:panelGroup>
+                    <p:inputText id="name1" value="#{userViewBean.newUsername}" 
+                                 />
+                    <p:message for="name1" />
+                </h:panelGroup>
+
+                <h:outputLabel for="password1">New Password: </h:outputLabel>
+                <h:panelGroup>
+                    <p:password id="password1" value="#{userViewBean.newPassword}" 
+                                match='password2'
+                                validatorMessage="Passwords doesn't match"/>
+                    <p:message for="password1" />
+                </h:panelGroup>
+
+                <h:outputLabel for="password2">Confirm Password: </h:outputLabel>
+                <h:panelGroup>
+                    <p:password id="password2" value="#{userViewBean.newPassword}" />
+                    <p:message for="password2" />
+                </h:panelGroup>
+
+                <h:outputLabel for="dob">Birthday: </h:outputLabel>
+                <h:panelGroup>
+                    <p:inputMask id="dob" value="#{userSessionBean.dob}"
+                                 required="true" requiredMessage="DOB is required"
+                                 converterMessage="Format should be dd/mm/yyyy"
+                                 mask="99/99/9999">
+                    </p:inputMask>
+                    <p:message for="dob"/>
+                </h:panelGroup>
+
+                <h:outputLabel for="des">Description: </h:outputLabel>
+                <h:panelGroup>
+                    <p:inputText id="des" value="#{userSessionBean.description}" 
+                                 placeholder="Talk about yourself"/>
+                    <p:message for="des" />
+                </h:panelGroup>
+
+                <h:outputLabel for="">Profile Picture: </h:outputLabel>
+                <p:fileUpload id="pp" value="#{userViewBean.pp}" 
+                              mode="simple" skinSimple="true"
+                              allowTypes="/(\.|\/)(jpg|jpeg|gif|png)$/"
+                              sizeLimit="10000000"
+                              fileLimit="1" invalidSizeMessage="File size too big. Less than 10MB"
+                              />
+                
+            </p:panelGrid>
+            <p:commandButton value="Update" ajax="false"
+                             action="#{userViewBean.editProfile}"
+                             update=":editProfile"/>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

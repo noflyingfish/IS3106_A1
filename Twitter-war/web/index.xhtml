@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./layout/landing.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="title">
+        Twitter. Welcome
+    </ui:define>
+
+    <ui:define name="banner">
+        This is Twitter
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="login">
+            <p:growl id="growl" showDetail="true"/>
+            <p:panelGrid columns="2">
+                <f:facet name="header">
+                    Log In
+                </f:facet>
+                <h:outputLabel for="name">Username: </h:outputLabel>
+                <h:panelGroup>
+                    <p:inputText id="name" value="#{userSessionBean.username}" 
+                                 required="true"
+                                 requiredMessage="Username is required"/>
+                    <p:message for="name" />
+                </h:panelGroup>
+                <h:outputLabel for="password">Password: </h:outputLabel>
+                <h:panelGroup>
+                    <p:password id="password" value="#{userSessionBean.password}" 
+                                required="true"
+                                requiredMessage="Password is required"/>
+                    <p:message for="password" />
+                </h:panelGroup>
+            </p:panelGrid>
+            <p:commandButton value="Log In"
+                             action="#{userSessionBean.login}"
+                             update=":login"/>
+        </h:form>
+        <h:form id="signup">
+            <p:commandButton value="Sign Up"
+                             action="signup.xhtml?faces-redirect=true"
+                             update=":signup"/>
+        </h:form>
+    </ui:define>
+</ui:composition>
