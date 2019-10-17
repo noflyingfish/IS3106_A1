@@ -12,7 +12,6 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -49,9 +48,9 @@ public class Users implements Serializable {
     @ManyToOne
     private Users userFollower;
     
-    @OneToMany(mappedBy = "userFollowing")
-    private List<Users> followList;
     @OneToMany(mappedBy = "userFollower")
+    private List<Users> followList;
+    @OneToMany(mappedBy = "userFollowing")
     private List<Users> followerList;
     
     public Long getId() {

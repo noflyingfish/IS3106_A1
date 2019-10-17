@@ -16,4 +16,7 @@ public interface TweetControllerLocal {
     public List<Tweet> searchAllTweet(String s);
     public List<Tweet> searchFollowingTweet(Users u);
     public byte[] getImageByTweet(Tweet t);
+    public int rtCount(Tweet t);
+    public List<Users> rtUserList(Tweet t);
+    public List<Users> likeCountUserList(Tweet t);
 }

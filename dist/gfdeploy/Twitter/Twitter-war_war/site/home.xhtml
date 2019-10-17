@@ -15,9 +15,9 @@
 
         <h:panelGroup rendered="#{userViewBean.checkPhoto()}">
             <img id="picture" src="data:image/jpg;base64,#{userViewBean.displayImage()}"
-                 width = "5%" height = "50%"/>
+                 width = "60" height = "40"/>
         </h:panelGroup>
-    <br/>
+        <br/>
         <h:outputText value="Welcome back to Twitter. #{userSessionBean.username}. The time now is " />
         <p:clock pattern="dd-MM-yyyy HH:mm:ss "/>
         <br/><br/>
@@ -36,10 +36,10 @@
                     <p:outputPanel>
                         <h:panelGroup>
                             <h:panelGrid columns="2" cellpadding="5">
-                                
+
                                 <h:outputText value="Oringal From:"  rendered="#{tweetViewBean.checkRT(tweet)}"/>
                                 <h:outputText value="#{tweet.retweetFrom}" style="font-weight: bold" rendered="#{tweetViewBean.checkRT(tweet)}"/>
-                                
+
                                 <h:outputText value="Posted By:" />
                                 <h:outputText value="#{tweet.ownedBy.userName}" style="font-weight: bold"/>
 
@@ -75,9 +75,123 @@
                         <p:commandButton value="Retweet"
                                          action="#{tweetViewBean.retweetTweet(tweet)}"
                                          />
+                        <p:commandButton value="Details"
+                                         update=":form:tweetDetail" title="Tweet Detail"
+                                         oncomplete="PF('tweetDialog').show()"
+                                         >
+                            <f:setPropertyActionListener value="#{tweet}" target="#{tweetViewBean.selectedTweet}" />                  
+                        </p:commandButton>
                     </p:outputPanel>
                 </h:panelGrid>
             </p:dataScroller>
+
+            <p:dialog header="Tweet Info" widgetVar="tweetDialog" modal="true" showEffect="fade" 
+                      hideEffect="fade" resizable="false" appendTo="@(body)">
+                <p:outputPanel id="tweetDetail" style="text-align:center;">
+                    <p:panelGrid  columns="2" rendered="#{not empty tweetViewBean.selectedTweet}" 
+                                  columnClasses="label,value">
+
+                        <f:facet name="header">
+                            <h:outputText value="Tweet Details" />
+                        </f:facet>
+
+                        <h:outputText value="Oringal From:"  rendered="#{tweetViewBean.checkRTBySelectedTweet()}"/>
+                        <h:outputText value="#{tweetViewBean.selectedTweet.retweetFrom}" style="font-weight: bold" rendered="#{tweetViewBean.checkRTBySelectedTweet()}"/>
+
+                        <h:outputText value="Posted By:" />
+                        <h:outputText value="#{tweetViewBean.selectedTweet.ownedBy.userName}" style="font-weight: bold"/>
+
+                        <h:outputText value="Posted On:" />
+                        <h:outputText value="#{tweetViewBean.selectedTweet.createdOn}" style="font-weight: bold"/>
+
+                        <h:outputText value="Tweet:" />
+                        <h:outputText value="#{tweetViewBean.selectedTweet.content}" style="font-weight: bold"/>
+
+                        <h:outputText value="Photo " rendered="#{tweetViewBean.checkPhotoBySelectedTweet()}" />
+                        <h:panelGroup rendered="#{tweetViewBean.checkPhotoBySelectedTweet()}">
+                            <img id="picture" src="data:image/jpg;base64,#{tweetViewBean.displayImageBySelectedTweet()}"
+                                 width = "25%" height = "20%"/>
+                        </h:panelGroup>
+
+                        <h:outputText value="Like Count:" />
+                        <h:panelGroup>
+                            <h:outputText value="#{tweetViewBean.likeCountBySelectedTweet()}" style="font-weight: bold"/>
+                            <p:commandButton value="List"
+                                             update=":form:List1" title="List1"
+                                             action="#{tweetViewBean.rtUserListBySelectTweet()}"
+                                             oncomplete="PF('list1Dialog').show()"
+                                             /> 
+                        </h:panelGroup>
+
+                        <h:outputText value="Retweet Count:" />
+                        <h:panelGroup>
+                            <h:outputText value="#{tweetViewBean.rtCountBySelectedTweet()}" style="font-weight: bold"/>
+                            <p:commandButton value="List"
+                                             update=":form:List" title="List"
+                                             action="#{tweetViewBean.rtUserListBySelectTweet()}"
+                                             oncomplete="PF('listDialog').show()"
+                                             />                           
+                        </h:panelGroup>
+
+                    </p:panelGrid>
+
+                    <p:commandButton value="Message Poster" title="Message Poster"
+
+                                     oncomplete="PF('msgDialog').show()"
+                                     />
+                </p:outputPanel>
+            </p:dialog>
+
+            <p:dialog header="List" widgetVar="listDialog" modal="true" showEffect="fade" 
+                      hideEffect="fade" resizable="false" appendTo="@(body)">
+                <p:outputPanel id="List" style="text-align:center;">
+                    <p:dataScroller value="#{tweetViewBean.rtUserList}" var="t" chunkSize="10">
+                        <f:facet name="header">
+                            Retweeted Users
+                        </f:facet>
+
+                        <f:facet name="loader">
+                            <p:commandButton type="button" value="More"/>
+                        </f:facet>
+
+                        <h:panelGrid columns="2" style="width:100%" columnClasses="logo,detail">
+
+                            <p:outputPanel>
+                                <h:panelGrid columns="2" cellpadding="5">
+                                    <h:outputText value="Username:" />
+                                    <h:outputText value="#{t.userName}" style="font-weight: bold"/>                             
+                                </h:panelGrid>
+                            </p:outputPanel>
+                        </h:panelGrid>
+                    </p:dataScroller>
+                </p:outputPanel>
+            </p:dialog>
+            
+             <p:dialog header="List1" widgetVar="list1Dialog" modal="true" showEffect="fade" 
+                      hideEffect="fade" resizable="false" appendTo="@(body)">
+                <p:outputPanel id="List1" style="text-align:center;">
+                    <p:dataScroller value="#{tweetViewBean.likeUserList}" var="t" chunkSize="10">
+                        <f:facet name="header">
+                            Liked Users
+                        </f:facet>
+
+                        <f:facet name="loader">
+                            <p:commandButton type="button" value="More"/>
+                        </f:facet>
+
+                        <h:panelGrid columns="2" style="width:100%" columnClasses="logo,detail">
+
+                            <p:outputPanel>
+                                <h:panelGrid columns="2" cellpadding="5">
+                                    <h:outputText value="Username:" />
+                                    <h:outputText value="#{t.userName}" style="font-weight: bold"/>                             
+                                </h:panelGrid>
+                            </p:outputPanel>
+                        </h:panelGrid>
+                    </p:dataScroller>
+                </p:outputPanel>
+            </p:dialog>
+
         </h:form>
     </ui:define>
 

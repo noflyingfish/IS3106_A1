@@ -54,35 +54,37 @@ public class UserController implements UserControllerLocal {
         Users curr = em.find(Users.class, curr1.getId());
         Users follow = em.find(Users.class, follow1.getId());
 
-        if (em.contains(curr)) System.out.println("curr conains");
-        if (em.contains(follow)) System.out.println("follow conains");
-
         List followList = curr.getFollowList();
         followList.add(follow);
         curr.setFollowList(followList);
-        System.out.println("curr1 " + curr.getFollowList().size());
-        em.merge(curr);
-        System.out.println("curr2 " + curr.getFollowList().size());
-        
+        follow.setUserFollower(curr);
+
         List followerList = follow.getFollowerList();
         followerList.add(curr);
         follow.setFollowerList(followerList);
-        System.out.println("follow1 " + follow.getFollowerList().size());
+        curr.setUserFollowing(follow);
+
+        em.merge(curr);
         em.merge(follow);
-        System.out.println("follow2  " + follow.getFollowerList().size());
     }
 
     @Override
-    public void unfollowUsers(Users curr, Users follow){
-
+    public void unfollowUsers(Users curr1, Users follow1){
+        
+        Users curr = em.find(Users.class, curr1.getId());
+        Users follow = em.find(Users.class, follow1.getId());
+        
         List followList = curr.getFollowList();
         followList.remove(follow);
         curr.setFollowList(followList);
-        em.merge(curr);
+        follow.setUserFollower(null);
 
         List followerList = follow.getFollowerList();
         followerList.remove(curr);
         follow.setFollowerList(followerList);
+        curr.setUserFollowing(null);
+        
+        em.merge(curr);
         em.merge(follow);
     }
 

@@ -4,6 +4,7 @@ import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 import entity.Tweet;
 import entity.Users;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -34,13 +35,17 @@ public class TweetViewBean implements Serializable {
     private List<Tweet> tweetList;
     private Users selectedUser;
     private String searchType;
+    private Tweet selectedTweet;
+
+    private List<Users> rtUserList;
+    private List<Users> likeUserList;
 
     private UploadedFile image;
     private byte[] file;
 
-    private List<Tweet> wallList;
-    private List<Tweet> ownList;
-    private List<Tweet> likedList;
+    private List<Tweet> wallList = new ArrayList<>();
+    private List<Tweet> ownList = new ArrayList<>();
+    private List<Tweet> likedList = new ArrayList<>();
 
     @PostConstruct
     public void init() {
@@ -79,7 +84,24 @@ public class TweetViewBean implements Serializable {
     public String searchTweet() {
         FacesContext context = FacesContext.getCurrentInstance();
         userSessionBean = (UserSessionBean) context.getApplication().evaluateExpressionGet(context, "#{userSessionBean}", UserSessionBean.class);
-        tweetList = tweetControllerLocal.searchAllTweet(searchString);
+        this.u = userSessionBean.getUser();
+
+        System.out.println("ASDASDAS " + searchType);
+
+        if (searchType.equals("All")) {
+            tweetList = tweetControllerLocal.searchAllTweet(searchString);
+        };
+
+        if (searchType.equals("Following")) {
+            List<Tweet> tmp = tweetControllerLocal.searchFollowingTweet(u);
+            tweetList = filterTweetList(tmp);
+        };
+
+        if (searchType.equals("Myself")) {
+            List<Tweet> tmp = tweetControllerLocal.searchUserTweetList(u);
+            tweetList = filterTweetList(tmp);
+        };
+
         return null;
     }
 
@@ -94,8 +116,22 @@ public class TweetViewBean implements Serializable {
         }
     }
 
+    public boolean checkPhotoBySelectedTweet() {
+        if (selectedTweet.getImage() == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     public String displayImage(Tweet t) {
         byte[] photo = tweetControllerLocal.getImageByTweet(t);
+        String a = Base64.encode(photo);
+        return a;
+    }
+
+    public String displayImageBySelectedTweet() {
+        byte[] photo = tweetControllerLocal.getImageByTweet(selectedTweet);
         String a = Base64.encode(photo);
         return a;
     }
@@ -148,11 +184,24 @@ public class TweetViewBean implements Serializable {
         return "/site/home.xhtml?faces-redirect=true";
     }
 
+    public int likeCountBySelectedTweet() {
+        likeUserList = tweetControllerLocal.likeCountUserList(selectedTweet);
+        return likeUserList.size();
+    }
+
     public boolean checkRT(Tweet t) {
         if (t == null) {
             System.out.println("NULL T, checkRT");
         }
         if (t.getRetweetFrom() == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean checkRTBySelectedTweet() {
+        if (selectedTweet.getRetweetFrom() == null) {
             return false;
         } else {
             return true;
@@ -165,7 +214,7 @@ public class TweetViewBean implements Serializable {
         u = userSessionBean.getUser();
 
         Tweet rt = new Tweet();
-        
+
         rt.setOwnedBy(u);
         rt.setContent(t.getContent());
         rt.setCreatedOn(new Date());
@@ -181,6 +230,10 @@ public class TweetViewBean implements Serializable {
         }
         init();
         return null;
+    }
+
+    public int rtCountBySelectedTweet() {
+        return tweetControllerLocal.rtCount(selectedTweet);
     }
 
     public void getOwnTweetList() {
@@ -202,7 +255,11 @@ public class TweetViewBean implements Serializable {
         FacesContext context = FacesContext.getCurrentInstance();
         userSessionBean = (UserSessionBean) context.getApplication().evaluateExpressionGet(context, "#{userSessionBean}", UserSessionBean.class);
         Users u = userSessionBean.getUser();
-        wallList = tweetControllerLocal.searchUserTweetList(u);
+        List<Users> followingList = userControllerLocal.getFollowingList(u);
+        for (Users user : followingList) {
+            wallList.addAll(tweetControllerLocal.searchUserTweetList(user));
+        }
+        wallList.addAll(tweetControllerLocal.searchUserTweetList(u));
     }
 
     public String deleteTweet(Tweet t) {
@@ -214,9 +271,30 @@ public class TweetViewBean implements Serializable {
         return null;
     }
 
+    private List<Tweet> filterTweetList(List<Tweet> lst) {
+
+        for (int x = 0; x < lst.size(); x++) {
+            Tweet t = lst.get(x);
+            if (!t.getContent().contains(searchString)) {
+                lst.remove(t);
+            }
+        }
+        return lst;
+    }
+
     public void viewUser(Tweet t) {
         u = t.getOwnedBy();
         selectedUser = userControllerLocal.searchUsersById(u.getId());
+    }
+
+    public void rtUserListBySelectTweet() {
+        rtUserList = tweetControllerLocal.rtUserList(selectedTweet);
+        System.out.println(rtUserList.size());
+    }
+
+    public void likeUserCountLikeBySelectedTweet() {
+        likeUserList = tweetControllerLocal.likeCountUserList(selectedTweet);
+        System.out.println(likeUserList.size());
     }
 
     public String getContent() {
@@ -330,7 +408,29 @@ public class TweetViewBean implements Serializable {
     public void setSearchType(String searchType) {
         this.searchType = searchType;
     }
-    
-    
-    
+
+    public Tweet getSelectedTweet() {
+        return selectedTweet;
+    }
+
+    public void setSelectedTweet(Tweet selectedTweet) {
+        this.selectedTweet = selectedTweet;
+    }
+
+    public List<Users> getRtUserList() {
+        return rtUserList;
+    }
+
+    public void setRtUserList(List<Users> rtUserList) {
+        this.rtUserList = rtUserList;
+    }
+
+    public List<Users> getLikeUserList() {
+        return likeUserList;
+    }
+
+    public void setLikeUserList(List<Users> likeUserList) {
+        this.likeUserList = likeUserList;
+    }
+
 }

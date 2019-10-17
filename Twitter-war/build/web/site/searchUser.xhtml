@@ -18,7 +18,7 @@
     <ui:define name="content">
 
         <h:form id="form">
-<!--            <p:growl id="growl" showDetail="true" sticky="true" /> -->
+            <!--            <p:growl id="growl" showDetail="true" sticky="true" /> -->
 
             <p:dataGrid widgetVar="usersTable" 
                         var="user" 
@@ -40,7 +40,7 @@
                         <h:outputText value="#{user.description}" style="text-align: center;"/>
                     </h:panelGrid>  
 
-                    <p:commandButton icon="fa fa-fw fa-search" 
+                    <p:commandButton icon="fa fa-fw fa-search" value="Details"
                                      update=":form:userDetail" title="User Detail"
                                      oncomplete="PF('userDialog').show()"
                                      >
@@ -50,7 +50,9 @@
 
             </p:dataGrid>
 
-            <p:dialog header="User Info" widgetVar="userDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false" appendTo="@(body)">
+            <p:dialog header="User Info" widgetVar="userDialog" modal="true" showEffect="fade" 
+                      hideEffect="fade" resizable="false" 
+                      appendTo="@(body)" dynamic="true">
                 <p:outputPanel id="userDetail" style="text-align:center;">
                     <p:panelGrid  columns="2" rendered="#{not empty userViewBean.selectedUser}" columnClasses="label,value">
 
@@ -82,12 +84,23 @@
                         <h:outputText value="Following: " />
                         <h:outputText value="#{userViewBean.selectedUser.followList.size()}" />
 
+
+
+                        <h:panelGroup rendered="#{userViewBean.checkFollow()}">
+                            <p:commandButton value="Unfollow" 
+                                             title="Unfollow user"
+                                             action="#{userViewBean.unfollowSelectedUser()}"
+                                             />
+                        </h:panelGroup>
+
+                        <h:panelGroup rendered="#{!userViewBean.checkFollow()}">
+                            <p:commandButton value="Follow" 
+                                             title="Follow user"
+                                             action="#{userViewBean.followSelectedUser}"
+                                             />
+                        </h:panelGroup>
                     </p:panelGrid>
 
-                    <p:commandButton value="Follow" 
-                                     title="Follow user"
-                                     action="#{userViewBean.followSelectedUser}"
-                                     />
                     <p:commandButton value="Message" title="Message user"
                                      update=":form:userMessage" 
                                      oncomplete="PF('msgDialog').show()"

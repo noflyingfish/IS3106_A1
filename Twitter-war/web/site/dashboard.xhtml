@@ -46,7 +46,13 @@
                                                 <h:outputText value="Description: " />
                                                 <h:outputText value="#{user.userName}" style="font-weight: bold"/>
 
-                                                <!--                    <p:graphicImage name="demo/images/car/-big.gif" /> -->
+                                                <p:commandButton icon="fa fa-fw fa-search" value="Details"
+                                                                 update=":form:userDetail" title="User Detail"
+                                                                 oncomplete="PF('userDialog').show()"
+                                                                 >
+                                                    <f:setPropertyActionListener value="#{user}" target="#{userViewBean.selectedUser}" />                  
+                                                </p:commandButton>
+
                                             </h:panelGrid>
                                         </h:panelGroup>
                                     </p:outputPanel>
@@ -82,7 +88,12 @@
                                                 <h:outputText value="Description: " />
                                                 <h:outputText value="#{user.description}" style="font-weight: bold"/>
 
-                                                <!--                    <p:graphicImage name="demo/images/car/-big.gif" /> -->
+                                                <p:commandButton icon="fa fa-fw fa-search" value="Details"
+                                                                 update=":form:userDetail" title="User Detail"
+                                                                 oncomplete="PF('userDialog').show()"
+                                                                 >
+                                                    <f:setPropertyActionListener value="#{user}" target="#{userViewBean.selectedUser}" />                  
+                                                </p:commandButton>
                                             </h:panelGrid>
                                         </h:panelGroup>
                                     </p:outputPanel>
@@ -118,7 +129,12 @@
                                                 <h:outputText value="Tweet:" />
                                                 <h:outputText value="#{tweet.content}" style="font-weight: bold"/>
 
-                                                <!--                    <p:graphicImage name="demo/images/car/-big.gif" /> -->
+                                                <h:outputText value="Photo " rendered="#{tweetViewBean.checkPhoto(tweet)}" />
+
+                                                <h:panelGroup rendered="#{tweetViewBean.checkPhoto(tweet)}">
+                                                    <img id="picture" src="data:image/jpg;base64,#{tweetViewBean.displayImage(tweet)}"
+                                                         width = "25%" height = "20%"/>
+                                                </h:panelGroup>
                                             </h:panelGrid>
                                         </h:panelGroup>
 
@@ -162,7 +178,12 @@
                                                 <h:outputText value="Tweet:" />
                                                 <h:outputText value="#{tweet.content}" style="font-weight: bold"/>
 
-                                                <!--                    <p:graphicImage name="demo/images/car/-big.gif" /> -->
+                                                <h:outputText value="Photo " rendered="#{tweetViewBean.checkPhoto(tweet)}" />
+
+                                                <h:panelGroup rendered="#{tweetViewBean.checkPhoto(tweet)}">
+                                                    <img id="picture" src="data:image/jpg;base64,#{tweetViewBean.displayImage(tweet)}"
+                                                         width = "25%" height = "20%"/>
+                                                </h:panelGroup>
                                             </h:panelGrid>
                                         </h:panelGroup>
 
@@ -178,9 +199,82 @@
                         </h:panelGrid>
                     </c:if>
                 </p:panel>
-
-
             </h:panelGrid>
+
+            <p:dialog header="User Info" widgetVar="userDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false" appendTo="@(body)">
+                <p:outputPanel id="userDetail" style="text-align:center;">
+                    <p:panelGrid  columns="2" rendered="#{not empty userViewBean.selectedUser}" columnClasses="label,value">
+
+                        <f:facet name="header">
+                            <h:outputText value="#{userViewBean.selectedUser.userName}'s Profile" />
+                        </f:facet>
+
+                        <h:outputText value="Profile Photo: "  rendered="#{userViewBean.checkPhotoSelectedUser()}"/>
+                        <h:panelGroup rendered="#{userViewBean.checkPhotoSelectedUser()}">
+                            <img id="picture" src="data:image/jpg;base64,#{userViewBean.displayImageSelectedUser()}"
+                                 width = "60" height = "90"/>
+                        </h:panelGroup>
+
+                        <h:outputText value="Username:" />
+                        <h:outputText value="#{userViewBean.selectedUser.userName}" />
+
+                        <h:outputText value="Birthday: " />
+                        <h:outputText value="#{userViewBean.selectedUser.birthday}" />
+
+                        <h:outputText value="Description: " />
+                        <h:outputText value="#{userViewBean.selectedUser.description}" />
+
+                        <h:outputText value="Tweets: " />
+                        <h:outputText value="#{userViewBean.selectedUser.ownedTweetList.size()}" />
+
+                        <h:outputText value="Followers: " />
+                        <h:outputText value="#{userViewBean.selectedUser.followerList.size()}" />
+
+                        <h:outputText value="Following: " />
+                        <h:outputText value="#{userViewBean.selectedUser.followList.size()}" />
+
+
+                        <h:panelGroup>
+                            <p:commandButton value="Follow" 
+                                             title="Follow user"
+                                             action="#{userViewBean.followSelectedUser}"
+                                             rendered="#{!userViewBean.checkFollow()}"
+                                             />
+                            <p:commandButton value="Unfollow" 
+                                             title="Unfollow user"
+                                             action="#{userViewBean.unfollowSelectedUser()}"
+                                             rendered="#{userViewBean.checkFollow()}"
+                                             />
+                        </h:panelGroup>
+                        <p:commandButton value="Message" title="Message user"
+                                         update=":form:userMessage" 
+                                         oncomplete="PF('msgDialog').show()"
+                                         />
+
+                    </p:panelGrid>
+                </p:outputPanel>
+            </p:dialog>
+
+            <p:dialog header="Message" widgetVar="msgDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false" appendTo="@(body)">
+                <p:outputPanel id="userMessage" style="text-align:center;">
+                    <p:panelGrid  columns="2" rendered="#{not empty userViewBean.selectedUser}" columnClasses="label,value">
+                        <f:facet name="header">
+                            <h:outputText value="Message #{userViewBean.selectedUser.userName}" />
+                        </f:facet>
+
+                        <h:outputText value="Message: " />
+                        <p:inputTextarea rows="5" cols="30" counter="display" maxlength="256" counterTemplate="{0} characters remaining." autoResize="false" />
+                        <h:outputText value="" />
+                        <h:outputText id="display" />
+
+                    </p:panelGrid>
+                    <p:commandButton value="Send" 
+                                     title="Send Message"
+                                     />
+                </p:outputPanel>
+
+            </p:dialog>
+
         </h:form>
     </ui:define>
 

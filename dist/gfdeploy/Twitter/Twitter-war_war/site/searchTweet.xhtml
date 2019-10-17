@@ -19,14 +19,14 @@
         <h:form id="form"> 
             <p:dataScroller value="#{tweetViewBean.tweetList}" var="tweet" chunkSize="10">
                 <f:facet name="header">
-<p:outputPanel style="text-align: left;">
-                    <p:selectOneMenu id="console" value="#{tweetView.searchType}" style="width:125px">
-                        <f:selectItem itemLabel="All" itemValue="" />
-                        <f:selectItem itemLabel="Following" itemValue="Following" />
-                        <f:selectItem itemLabel="Myself" itemValue="Myself" />
-                    </p:selectOneMenu>
                     
-                    
+                    <p:outputPanel style="text-align: left;">
+                        <p:selectOneMenu id="console" value="#{tweetViewBean.searchType}" style="width:125px">
+                            <f:selectItem itemLabel="All" itemValue="All" />
+                            <f:selectItem itemLabel="Following" itemValue="Following" />
+                            <f:selectItem itemLabel="Myself" itemValue="Myself" />
+                        </p:selectOneMenu>
+
                         <p:inputText placeholder="Search Tweet" value="#{tweetViewBean.searchString}"/>
                         <p:commandButton value="Search"
                                          action="#{tweetViewBean.searchTweet}"

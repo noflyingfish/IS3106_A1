@@ -130,27 +130,34 @@ public class UserViewBean implements Serializable {
         return a;
     }
 
-    public List<Users> searchUser() {
-        FacesContext context = FacesContext.getCurrentInstance();
-        userSessionBean = (UserSessionBean) context.getApplication().evaluateExpressionGet(context, "#{userSessionBean}", UserSessionBean.class);
-        userList = userControllerLocal.searchUsers(searchString);
-        userList.remove(userSessionBean.getUser());
-        for (Users u : userList) {
-            System.out.println(u.getUserName());
-        }
-        return null;
-    }
-
-    public String followSelectedUser() {
+    public boolean checkFollow() {
         FacesContext context = FacesContext.getCurrentInstance();
         userSessionBean = (UserSessionBean) context.getApplication().evaluateExpressionGet(context, "#{userSessionBean}", UserSessionBean.class);
         Users currUser = userSessionBean.getUser();
-        try {
-            userControllerLocal.followUsers(currUser, selectedUser);
-        } catch (Exception e) {
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Unable to follow user"));
+
+        List<Users> followList = userControllerLocal.getFollowingList(currUser);
+        for (Users user : followList) {
+            if (user.getId().equals(selectedUser.getId())) {
+                return true;
+            }
+            
         }
-        return null;
+        System.out.println(selectedUser.getUserName());
+        return false;
+    }
+
+    public void unfollowSelectedUser() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        userSessionBean = (UserSessionBean) context.getApplication().evaluateExpressionGet(context, "#{userSessionBean}", UserSessionBean.class);
+        Users currUser = userSessionBean.getUser();
+        userControllerLocal.unfollowUsers(currUser, selectedUser);
+    }
+
+    public void followSelectedUser() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        userSessionBean = (UserSessionBean) context.getApplication().evaluateExpressionGet(context, "#{userSessionBean}", UserSessionBean.class);
+        Users currUser = userSessionBean.getUser();
+        userControllerLocal.followUsers(currUser, selectedUser);
     }
 
     public void followerList() {
@@ -165,6 +172,17 @@ public class UserViewBean implements Serializable {
         userSessionBean = (UserSessionBean) context.getApplication().evaluateExpressionGet(context, "#{userSessionBean}", UserSessionBean.class);
         Users u = userSessionBean.getUser();
         followingList = userControllerLocal.getFollowingList(u);
+    }
+
+    public List<Users> searchUser() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        userSessionBean = (UserSessionBean) context.getApplication().evaluateExpressionGet(context, "#{userSessionBean}", UserSessionBean.class);
+        userList = userControllerLocal.searchUsers(searchString);
+        userList.remove(userSessionBean.getUser());
+        for (Users u : userList) {
+            System.out.println(u.getUserName());
+        }
+        return null;
     }
 
     public String getSearchString() {
