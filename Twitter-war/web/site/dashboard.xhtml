@@ -246,11 +246,6 @@
                                              rendered="#{userViewBean.checkFollow()}"
                                              />
                         </h:panelGroup>
-                        <p:commandButton value="Message" title="Message user"
-                                         update=":form:userMessage" 
-                                         oncomplete="PF('msgDialog').show()"
-                                         />
-
                     </p:panelGrid>
                 </p:outputPanel>
             </p:dialog>
@@ -268,14 +263,11 @@
                         <h:outputText id="display" />
 
                     </p:panelGrid>
-                    <p:commandButton value="Send" 
-                                     title="Send Message"
-                                     />
                 </p:outputPanel>
 
             </p:dialog>
-
         </h:form>
+
     </ui:define>
 
 </ui:composition>
